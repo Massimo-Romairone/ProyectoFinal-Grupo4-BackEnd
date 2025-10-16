@@ -1,26 +1,59 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateCampañaDto } from './dto/create-campaña.dto';
 import { UpdateCampañaDto } from './dto/update-campaña.dto';
+import { Campaña } from './entities/campaña.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class CampañaService {
-  create(createCampañaDto: CreateCampañaDto) {
-    return 'This action adds a new campaña';
+  constructor(
+    @InjectRepository(Campaña)
+    private campaniaRepository: Repository<Campaña>,
+  ){}
+
+  async create(createCampañaDto: CreateCampañaDto): Promise<Campaña> {
+    try {
+      const nuevaCampania = this.campaniaRepository.create(createCampañaDto);
+      return await this.campaniaRepository.save(nuevaCampania);
+    } catch (error) {
+      throw new InternalServerErrorException('Error al crear la campaña');
+    } 
   }
 
-  findAll() {
-    return `This action returns all campaña`;
+  async findAll(): Promise<Campaña[]> {
+    return this.campaniaRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} campaña`;
+  async findOne(id: number): Promise<Campaña> {
+    const campania = await this.campaniaRepository.findOne({
+      where: {id_campania: id},
+      relations: [],
+    });
+
+    if(!campania) {
+      throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
+    }
+
+    return campania;
   }
 
-  update(id: number, updateCampañaDto: UpdateCampañaDto) {
-    return `This action updates a #${id} campaña`;
+  async update(id: number, updateCampañaDto: UpdateCampañaDto): Promise<Campaña> {
+    const editarCampania = await this.campaniaRepository.findOneBy({id_campania: id});
+
+    if(!editarCampania) {
+      throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
+    }
+
+    const campaniaEditada = this.campaniaRepository.merge(editarCampania, updateCampañaDto);
+    return this.campaniaRepository.save(campaniaEditada);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} campaña`;
+  async remove(id: number): Promise<void> {
+    const campaniaResult: DeleteResult = await this.campaniaRepository.delete({ id_campania: id }); 
+    
+    if(campaniaResult.affected === 0) {
+      throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
+    }
   }
 }

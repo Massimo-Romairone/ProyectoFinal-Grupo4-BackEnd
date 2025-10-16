@@ -3,7 +3,7 @@ import { CampañaService } from './campaña.service';
 import { CreateCampañaDto } from './dto/create-campaña.dto';
 import { UpdateCampañaDto } from './dto/update-campaña.dto';
 
-@Controller('campaña')
+@Controller('campanias')
 export class CampañaController {
   constructor(private readonly campañaService: CampañaService) {}
 

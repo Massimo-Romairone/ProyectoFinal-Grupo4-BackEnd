@@ -1,13 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { CampañaModule } from './campaña/campaña.module';
-import { UsuarioModule } from './usuario/usuario.module';
-import { DonacionModule } from './donacion/donacion.module';
 
 @Module({
-  imports: [CampañaModule, UsuarioModule, DonacionModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      url: "postgresql://postgres.zbjnnacinotlinkdpybl:1234@aws-1-us-east-1.pooler.supabase.com:5432/postgres",
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    CampañaModule,
+  ], 
 })
 export class AppModule {}
