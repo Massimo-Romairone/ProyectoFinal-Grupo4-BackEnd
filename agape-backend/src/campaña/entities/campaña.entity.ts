@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Donacion } from "src/donacion/entities/donacion.entity";
+import { Usuario } from "src/usuario/entities/usuario.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Campaña {
@@ -25,4 +27,11 @@ export class Campaña {
 
     @Column()
     activo: boolean;
+
+    @OneToOne(() => Usuario, (usuario) => usuario.campaña)
+    @JoinColumn({name: 'id_duenio'})
+    usuario: Usuario;
+
+    @OneToMany(() => Donacion, (donacion) => donacion.campania)
+    donaciones: Donacion[];
 }
