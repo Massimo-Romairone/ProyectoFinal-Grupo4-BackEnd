@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CampañaModule } from './campaña/campaña.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { DonacionModule } from './donacion/donacion.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { DonacionModule } from './donacion/donacion.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CampañaModule, UsuarioModule, DonacionModule
+    CampañaModule, UsuarioModule, DonacionModule, AuthModule
   ], 
 })
 export class AppModule {}

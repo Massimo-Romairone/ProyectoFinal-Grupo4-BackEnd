@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateCampañaDto } from './dto/create-campaña.dto';
 import { UpdateCampañaDto } from './dto/update-campaña.dto';
 import { Campaña } from './entities/campaña.entity';
@@ -7,6 +7,8 @@ import { DeleteResult, Repository } from 'typeorm';
 
 @Injectable()
 export class CampañaService {
+  private readonly logger = new Logger(CampañaService.name);
+
   constructor(
     @InjectRepository(Campaña)
     private campaniaRepository: Repository<Campaña>,
@@ -15,8 +17,13 @@ export class CampañaService {
   async create(createCampañaDto: CreateCampañaDto): Promise<Campaña> {
     try {
       const nuevaCampania = this.campaniaRepository.create(createCampañaDto);
-      return await this.campaniaRepository.save(nuevaCampania);
+      const guardarCampania = await this.campaniaRepository.save(nuevaCampania);
+
+      this.logger.log(`Campania creada: id=${guardarCampania.id_campania}, nombre=${guardarCampania.nombre ?? 'sin-nombre'}`);
+      return guardarCampania;
+
     } catch (error) {
+      this.logger.error('Error al crear la campania', error);
       throw new InternalServerErrorException('Error al crear la campaña');
     } 
   }
@@ -31,7 +38,8 @@ export class CampañaService {
       relations: [],
     });
 
-    if(!campania) {
+    if (!campania) {
+      this.logger.warn(`Campania no encontrada: id=${id}`);
       throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
     }
 
@@ -39,21 +47,43 @@ export class CampañaService {
   }
 
   async update(id: number, updateCampañaDto: UpdateCampañaDto): Promise<Campaña> {
-    const editarCampania = await this.campaniaRepository.findOneBy({id_campania: id});
+    try {
+      const campania = await this.campaniaRepository.preload({
+        id_campania: id,
+        ...updateCampañaDto,
+      });
 
-    if(!editarCampania) {
-      throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
+      if (!campania) {
+        this.logger.warn(`Intentando actualizar una campania que no existe: id=${id}`);
+        throw new NotFoundException(`No se encontro la campaña con el ID ${id}`);
+      }
+
+      const campaniaGuardada = await this.campaniaRepository.save(campania);
+
+      this.logger.log(`Campania actualizada: id=${id}`);
+
+      return campaniaGuardada;
+    } catch (error) {
+      this.logger.error(`Error actualizando la campania: id=${id}`, error);
+      throw new InternalServerErrorException('Error al actualizar la campaña');
     }
-
-    const campaniaEditada = this.campaniaRepository.merge(editarCampania, updateCampañaDto);
-    return this.campaniaRepository.save(campaniaEditada);
   }
 
-  async remove(id: number): Promise<void> {
-    const campaniaResult: DeleteResult = await this.campaniaRepository.delete({ id_campania: id }); 
-    
-    if(campaniaResult.affected === 0) {
-      throw new NotFoundException(`No se encontró la campaña con el ID ${id}`);
+  async remove(id: number): Promise<{ deleted: boolean }> {
+    try {
+      const resultado: DeleteResult = await this.campaniaRepository.delete({ id_campania: id });
+
+      if (resultado.affected === 0) {
+        this.logger.warn(`Intentando eliminar una campania que no existe: id=${id}`);
+        throw new NotFoundException(`No se encontro la campaña con el ID ${id}`);
+      }
+
+      this.logger.log(`Campaña eliminada: id=${id}`);
+
+      return { deleted: true };
+    } catch (error) {
+      this.logger.error(`Error eliminando la campania id=${id}`, error);
+      throw new InternalServerErrorException('Error al eliminar la campaña');
     }
   }
 }

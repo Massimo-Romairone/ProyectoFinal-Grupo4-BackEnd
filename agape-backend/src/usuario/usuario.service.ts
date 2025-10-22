@@ -33,6 +33,14 @@ export class UsuarioService {
     return usuario;
   }
 
+  async findOneByEmail(email: string): Promise<Usuario | null> {
+    return this.usuarioRepository
+      .createQueryBuilder('usuario')
+      .addSelect('usuario.contraseña')
+      .where('usuario.email = :email', { email })
+      .getOne();
+  }
+
   update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
     return `This action updates a #${id} usuario`;
   }
