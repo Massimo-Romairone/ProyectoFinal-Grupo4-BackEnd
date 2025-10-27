@@ -5,7 +5,10 @@ import { Column, Entity, Index, OneToMany, OneToOne, PrimaryGeneratedColumn } fr
 @Entity()
 export class Usuario {
     @PrimaryGeneratedColumn()
-    id_nombreUsuario: number;
+    id_Usuario: number;
+
+    @Column({length: 20})
+    nombreUsuario: string;
 
     @Column({length: 45})
     nombre: string;

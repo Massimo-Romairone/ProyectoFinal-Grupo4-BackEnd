@@ -24,7 +24,7 @@ export class AuthService {
 
         if (!match) throw new UnauthorizedException('Credenciales inválidas');
 
-        const payload = { sub: user.id_nombreUsuario, email: user.email };
+        const payload = { sub: user.id_Usuario, email: user.email };
 
         const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
@@ -34,9 +34,10 @@ export class AuthService {
     }
 
     async register(registerDto: RegisterDto) {
+        console.log("entro al metodo register");
         const existing = await this.usuarioService.findOneByEmail(registerDto.email);
         if (existing) {
-        throw new ConflictException('Email ya registrado');
+            throw new ConflictException('Email ya registrado');
         }
 
         const hashedPassword = await bcrypt.hash(registerDto.contraseña, 10);
