@@ -19,7 +19,7 @@ export class AuthController {
         @Body() body: Record<string, any>,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const { email, contraseña } = body; // o password, según tu frontend
+        const { email, contraseña } = body;
         const { access_token, refresh_token, user } = await this.authService.signIn(
         email,
         contraseña,

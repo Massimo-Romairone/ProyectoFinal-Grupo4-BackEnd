@@ -24,7 +24,7 @@ export class AuthService {
 
         if (!match) throw new UnauthorizedException('Credenciales inválidas');
 
-        const payload = { sub: user.id_nombreUsuario, email: user.email };
+        const payload = { sub: user.id_Usuario, email: user.email };
 
         const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
@@ -43,6 +43,7 @@ export class AuthService {
 
         const newUser = await this.usuarioService.create({
         ...registerDto,
+        nombreUsuario: registerDto.nombreUsuario,
         contraseña: hashedPassword,
         });
 
