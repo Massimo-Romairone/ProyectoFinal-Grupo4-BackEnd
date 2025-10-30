@@ -12,10 +12,11 @@ export class AuthService {
     ) {}
 
     async signIn(email: string, pass: string): Promise<any> {
+        
         const user = await this.usuarioService.findOneByEmail(email);
-
+        
         if (!user) throw new UnauthorizedException('Credenciales inválidas');
-
+        
         const stored = user.contraseña;
         if (!stored) throw new UnauthorizedException('Usuario sin contraseña almacenada');
 
@@ -23,7 +24,7 @@ export class AuthService {
         const match = isHashed ? await bcrypt.compare(pass, stored) : pass === stored;
 
         if (!match) throw new UnauthorizedException('Credenciales inválidas');
-
+        
         const payload = { sub: user.id_Usuario, email: user.email };
 
         const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
@@ -44,6 +45,7 @@ export class AuthService {
 
         const newUser = await this.usuarioService.create({
         ...registerDto,
+        nombreUsuario: registerDto.nombreUsuario,
         contraseña: hashedPassword,
         });
 
@@ -60,12 +62,16 @@ export class AuthService {
             const payload = this.jwtService.verify(refreshToken);
             const access_token = this.jwtService.sign(
             { sub: payload.sub, email: payload.email },
-            { expiresIn: '15m' },
+            { expiresIn: '1d' },
             );
             return { access_token };
         } catch (e) {
             throw new UnauthorizedException('Refresh token inválido o expirado');
         }
+    }
+
+    async findOne(id: number) {
+        return this.usuarioService.findOne(id);
     }
 
 }

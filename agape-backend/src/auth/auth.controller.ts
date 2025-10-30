@@ -1,7 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -20,7 +21,7 @@ export class AuthController {
         @Body() body: Record<string, any>,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const { email, contraseña } = body; // o password, según tu frontend
+        const { email, contraseña } = body;
         const { access_token, refresh_token, user } = await this.authService.signIn(
         email,
         contraseña,
@@ -49,5 +50,20 @@ export class AuthController {
         sameSite: 'lax',
         });
         return { ok: true };
+    }
+
+    @Get('me')
+    @UseGuards(AuthGuard('jwt'))
+    async getProfile(@Request() req) {
+        try {
+            const user = await this.authService.findOne(req.user.sub);
+            if (!user) {
+                throw new UnauthorizedException('Usuario no encontrado');
+            }
+            const { contraseña, ...result } = user;
+            return result;
+        } catch (error) {
+            throw new UnauthorizedException('Error al obtener perfil de usuario');
+        }
     }
 }
