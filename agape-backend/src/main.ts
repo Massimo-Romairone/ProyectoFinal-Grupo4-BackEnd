@@ -12,6 +12,8 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
+  (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

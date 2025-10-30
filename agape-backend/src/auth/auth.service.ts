@@ -59,10 +59,14 @@ export class AuthService {
         try {
             const payload = this.jwtService.verify(refreshToken);
             const access_token = this.jwtService.sign(
-            { sub: payload.sub, email: payload.email },
-            { expiresIn: '15m' },
+                { sub: payload.sub, email: payload.email },
+                { expiresIn: '15m' },
             );
-            return { access_token };
+
+            const user = await this.usuarioService.findOne(payload.sub);
+            if (!user) throw new UnauthorizedException('Usuario no encontrado');
+
+            return { access_token, user };
         } catch (e) {
             throw new UnauthorizedException('Refresh token inválido o expirado');
         }

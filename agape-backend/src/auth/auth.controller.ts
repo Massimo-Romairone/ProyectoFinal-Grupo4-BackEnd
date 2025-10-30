@@ -2,6 +2,7 @@ import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedExc
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,10 +17,10 @@ export class AuthController {
     @Post('login')
     @HttpCode(HttpStatus.OK)
     async login(
-        @Body() body: Record<string, any>,
+        @Body() loginDto: LoginDto,
         @Res({ passthrough: true }) res: Response,
     ) {
-        const { email, contraseña } = body;
+        const { email, contraseña } = loginDto;
         const { access_token, refresh_token, user } = await this.authService.signIn(
         email,
         contraseña,
