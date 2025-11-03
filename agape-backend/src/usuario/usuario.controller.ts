@@ -25,8 +25,13 @@ export class UsuarioController {
     return req.user;
   }
 
+  @Get('email/:email')
+  findOneEmail(@Param('email') email: string) {
+    return this.usuarioService.findOneEmail(email);
+  }
+
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.usuarioService.findOne(+id);
   }
 

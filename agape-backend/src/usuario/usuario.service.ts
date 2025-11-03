@@ -46,6 +46,19 @@ export class UsuarioService {
     return usuario;
   }
 
+  async findOneEmail(email: string): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { email: email },
+      relations: [],
+    });
+
+    if(!usuario) {
+      throw new NotFoundException(`No se encontró el usuario con el email ${email}`);
+    }
+
+    return usuario;
+  }
+
   async findOneByEmail(email: string): Promise<Usuario | null> {
     return this.usuarioRepository
       .createQueryBuilder('usuario')

@@ -1,7 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
+import { AuthGuard } from '@nestjs/passport';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
@@ -11,6 +12,7 @@ export class AuthController {
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() registerDto: RegisterDto) {
+        console.log("entro el post register")
         return this.authService.register(registerDto);
     }
 
@@ -49,5 +51,25 @@ export class AuthController {
         sameSite: 'lax',
         });
         return { ok: true };
+    }
+
+    @Get('me')
+    @UseGuards(AuthGuard('jwt'))
+    async getProfile(@Request() req) {
+        try {
+            const user = await this.authService.findOne(req.user.sub);
+            if (!user) {
+                throw new UnauthorizedException('Usuario no encontrado');
+            }
+            const { contraseña, ...result } = user;
+            return result;
+        } catch (error) {
+            throw new UnauthorizedException('Error al obtener perfil de usuario');
+        }
+    }
+
+    @Post('google')
+    async google(@Body('credential') credential: string) {
+        return this.authService.loginWithGoogle(credential);
     }
 }
