@@ -12,6 +12,14 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
+  app.use((req, res, next) => {
+    // Permitir postMessage/popups entre orígenes (más permisivo para dev)
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    // Remover Cross-Origin-Embedder-Policy si existe (evitar bloqueo de iframes)
+    res.removeHeader('Cross-Origin-Embedder-Policy');
+    next();
+  });
+
   (app.getHttpAdapter().getInstance() as any).set('trust proxy', 1);
 
   app.useGlobalPipes(

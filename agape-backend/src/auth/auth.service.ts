@@ -12,7 +12,13 @@ export class AuthService {
     constructor(
         private usuarioService: UsuarioService,
         private jwtService: JwtService,
-    ) {}
+    ) {
+      const clientId = process.env.GOOGLE_CLIENT_ID;
+        if (!clientId) {
+            console.warn('GOOGLE_CLIENT_ID no definido. Google login fallará si se usa sin configurar la variable de entorno.');
+        }
+        this.client = new OAuth2Client(clientId);
+    }
 
     async signIn(email: string, pass: string): Promise<any> {
         
@@ -38,7 +44,6 @@ export class AuthService {
     }
 
     async register(registerDto: RegisterDto) {
-        console.log("entro al metodo register");
         const existing = await this.usuarioService.findOneByEmail(registerDto.email);
         if (existing) {
             throw new ConflictException('Email ya registrado');
