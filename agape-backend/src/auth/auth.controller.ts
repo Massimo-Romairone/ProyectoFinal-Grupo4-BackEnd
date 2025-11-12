@@ -11,7 +11,6 @@ export class AuthController {
     @Post('register')
     @HttpCode(HttpStatus.CREATED)
     async register(@Body() registerDto: RegisterDto) {
-        console.log("entro el post register")
         return this.authService.register(registerDto);
     }
 
@@ -56,7 +55,7 @@ export class AuthController {
     @UseGuards(AuthGuard('jwt'))
     async getProfile(@Request() req) {
         try {
-            const user = await this.authService.findOne(req.user.sub);
+            const user = await this.authService.findOne(req.user.id_Usuario);
             if (!user) {
                 throw new UnauthorizedException('Usuario no encontrado');
             }

@@ -28,7 +28,7 @@ export class Campaña {
     @Column()
     activo: boolean;
 
-    @OneToOne(() => Usuario, (usuario) => usuario.campaña)
+    @OneToOne(() => Usuario, (usuario) => usuario.campaña, { eager: true })
     @JoinColumn({name: 'id_duenio'})
     usuario: Usuario;
 

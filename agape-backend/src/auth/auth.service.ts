@@ -30,6 +30,7 @@ export class AuthService {
         const access_token = this.jwtService.sign(payload, { expiresIn: '15m' });
         const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
 
+
         const { contraseña, ...safeUser } = user;
         return { access_token, refresh_token, user: safeUser };
     }
