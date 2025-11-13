@@ -16,6 +16,14 @@ export class UsuarioService {
 
   async create(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
     try {
+
+      // validaar si ya tiene una cuenta con ese email (PROBAR ESTO)
+      const usuarioExistente = await this.usuarioRepository.findOne({
+        where: { email: createUsuarioDto.email },
+      });
+      if (usuarioExistente) {
+        throw new Error('Ya existe un usuario con ese email');
+      }
       const nuevoUsuario = this.usuarioRepository.create(createUsuarioDto);
       const guardarUsuario = await this.usuarioRepository.save(nuevoUsuario);
 

@@ -2,14 +2,18 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DonacionService } from './donacion.service';
 import { CreateDonacionDto } from './dto/create-donacion.dto';
 import { UpdateDonacionDto } from './dto/update-donacion.dto';
+import { UseGuards, Request } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport'
 
-@Controller('donacion')
+@Controller('donaciones')
 export class DonacionController {
   constructor(private readonly donacionService: DonacionService) {}
 
   @Post()
-  create(@Body() createDonacionDto: CreateDonacionDto) {
-    return this.donacionService.create(createDonacionDto);
+  @UseGuards(AuthGuard('jwt'))
+  async create(@Body() createDonacionDto: CreateDonacionDto, @Request() req) {
+    const userId = req.user?.sub ?? req.user?.id_Usuario;
+    return this.donacionService.create(createDonacionDto, userId, createDonacionDto.campaniaId);
   }
 
   @Get()
