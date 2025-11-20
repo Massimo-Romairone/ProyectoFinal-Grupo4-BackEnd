@@ -98,6 +98,11 @@ export class CampañaService {
     }
   }
 
+  async incrementRecaudado(campaniaId: number, monto: number) {
+    await this.campaniaRepository.increment({ id_campania: campaniaId }, 'recaudado', monto);
+    return this.campaniaRepository.findOne({ where: { id_campania: campaniaId } });
+  }
+
   async remove(id: number): Promise<{ deleted: boolean }> {
     try {
       const resultado: DeleteResult = await this.campaniaRepository.delete({ id_campania: id });
@@ -115,4 +120,6 @@ export class CampañaService {
       throw new InternalServerErrorException('Error al eliminar la campaña');
     }
   }
+
+
 }

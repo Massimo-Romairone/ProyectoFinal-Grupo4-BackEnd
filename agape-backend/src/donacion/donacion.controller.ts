@@ -13,7 +13,17 @@ export class DonacionController {
   @UseGuards(AuthGuard('jwt'))
   async create(@Body() createDonacionDto: CreateDonacionDto, @Request() req) {
     const userId = req.user?.sub ?? req.user?.id_Usuario;
-    return this.donacionService.create(createDonacionDto, userId, createDonacionDto.campaniaId);
+    return this.donacionService.create(createDonacionDto, userId);
+  }
+
+  @Get('campania/:id')
+  findAllByCamp(@Param('id') id: string) {
+    return this.donacionService.findAllByCamp(+id);
+  }
+
+  @Get('usuario/:id')
+  findAllByUser(@Param('id') id: string) {
+    return this.donacionService.findAllByUser(+id);
   }
 
   @Get()
