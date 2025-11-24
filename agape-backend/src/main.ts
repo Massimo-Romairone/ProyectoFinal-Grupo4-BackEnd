@@ -13,9 +13,7 @@ async function bootstrap() {
   });
 
   app.use((req, res, next) => {
-    // Permitir postMessage/popups entre orígenes (más permisivo para dev)
     res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    // Remover Cross-Origin-Embedder-Policy si existe (evitar bloqueo de iframes)
     res.removeHeader('Cross-Origin-Embedder-Policy');
     next();
   });

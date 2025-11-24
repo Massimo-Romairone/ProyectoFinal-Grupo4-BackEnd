@@ -115,4 +115,8 @@ export class CampañaService {
       throw new InternalServerErrorException('Error al eliminar la campaña');
     }
   }
+
+  async updateRecaudado(campaña: Campaña) {
+    return this.campaniaRepository.save(campaña);
+  }
 }

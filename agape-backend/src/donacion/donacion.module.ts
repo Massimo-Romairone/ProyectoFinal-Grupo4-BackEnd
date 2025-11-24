@@ -14,5 +14,6 @@ import { CampañaModule } from 'src/campaña/campaña.module';
   ],
   controllers: [DonacionController],
   providers: [DonacionService],
+  exports: [DonacionService]
 })
 export class DonacionModule {}

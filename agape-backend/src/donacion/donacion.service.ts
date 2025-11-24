@@ -39,6 +39,51 @@ export class DonacionService {
     }
   }
 
+  // Nuevo método específico para el Webhook
+  async createDonacionMercadoPago(monto: number, id_campania: number, paymentId: string, idUsuario: number): Promise<Donacion> {
+    try {
+      console.log(`💾 Procesando donación de MP: $${monto} para campaña ${id_campania}`);
+
+      // 1. Buscamos la campaña
+      const campaña = await this.campañaService.findOne(id_campania);
+      if (!campaña) throw new Error('Campaña no encontrada para la donación');
+
+      const usuario = await this.usuarioService.findOne(idUsuario); 
+      // Opcional: validar si existe usuario
+
+      // 2. Creamos la entidad
+      const nuevaDonacion = this.donacionRepository.create({
+        monto: Number(monto),
+        fecha: new Date().toISOString(),
+        usuario: usuario,
+        campania: campaña,
+        // paymentId: paymentId 
+      });
+
+      // 🚨 AQUÍ ESTABA EL ERROR: Faltaba guardar y asignar a la variable
+      const donacionGuardada = await this.donacionRepository.save(nuevaDonacion);
+
+      // 3. Actualizamos el recaudado de la campaña
+      const montoActual = Number(campaña.recaudado) || 0;
+      const montoNuevo = Number(monto);
+
+      campaña.recaudado = montoActual + montoNuevo;
+
+      // Guardamos la campaña actualizada
+      // Asegúrate de tener este método en tu CampañaService (ver abajo)
+      await this.campañaService.updateRecaudado(campaña); 
+
+      console.log(`📈 Campaña actualizada. Nuevo total: $${campaña.recaudado}`);
+
+      return donacionGuardada;
+
+    } catch (error) {
+      console.error("Error al procesar donación:", error);
+      // Es buena idea relanzar el error o manejarlo según tu lógica
+      throw error; 
+    }
+  }
+
   async findAll(): Promise<Donacion[]> {
     return this.donacionRepository.find();
   }

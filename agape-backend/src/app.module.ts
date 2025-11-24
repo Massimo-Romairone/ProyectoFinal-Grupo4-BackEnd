@@ -5,6 +5,11 @@ import { CampañaModule } from './campaña/campaña.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { DonacionModule } from './donacion/donacion.module';
 import { AuthModule } from './auth/auth.module';
+import { MercadoPagoService } from './mercado-pago/mercado-pago.service';
+import { MercadoPagoModule } from './mercado-pago/mercado-pago.module';
+// import { MercadoPagoModule } from './mercado-pago/mercado-pago.module';
+// import { MercadoPagoService } from './mercado-pago/mercado-pago.service';
+
 
 @Module({
   imports: [
@@ -18,7 +23,8 @@ import { AuthModule } from './auth/auth.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    CampañaModule, UsuarioModule, DonacionModule, AuthModule
-  ], 
+    CampañaModule, UsuarioModule, DonacionModule, AuthModule, MercadoPagoModule
+  ],
+  providers: [],
 })
 export class AppModule {}
