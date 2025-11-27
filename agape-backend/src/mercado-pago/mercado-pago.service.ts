@@ -6,10 +6,10 @@ import { MercadoPagoConfig, Payment, Preference } from 'mercadopago';
 export class MercadoPagoService {
   constructor(private configService: ConfigService) {}
 
-  async crearPreferencia(monto: number, idCampania: string, userId: number) {
+  async crearPreferencia(monto: number, idCampania: string, userId: number, tokenDelVendedor: string) {
     try {
       const client = new MercadoPagoConfig({
-        accessToken: this.configService.getOrThrow<string>('MERCADOPAGO_ACCESS_TOKEN'),
+        accessToken: tokenDelVendedor,
       });
 
       const preference = new Preference(client);
@@ -46,7 +46,6 @@ export class MercadoPagoService {
       return result; 
 
     } catch (error) {
-      console.error('Error al crear la preferencia de Mercado Pago:', error);
       throw new InternalServerErrorException(
         error.message || 'Error al conectar con Mercado Pago',
       );
@@ -60,17 +59,13 @@ export class MercadoPagoService {
       });
 
       const payment = new Payment(client);
-
-      // Consultamos a MP los detalles de ese ID
       const paymentData = await payment.get({ id: paymentId });
 
-      // Aquí tienes TODA la info del pago
       return {
-        status: paymentData.status,           // ej: 'approved'
+        status: paymentData.status,
         status_detail: paymentData.status_detail, 
         monto: paymentData.transaction_amount,
         userId: paymentData.metadata.user_id,
-        // IMPORTANTE: Aquí recuperamos el ID de la campaña que guardamos antes
         campaniaId: paymentData.external_reference, 
         date: paymentData.date_created
       };

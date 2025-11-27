@@ -8,7 +8,7 @@ import { UsuarioModule } from '../usuario/usuario.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Campaña]),
-    forwardRef(() => UsuarioModule), // <-- asegurar disponibilidad de UsuarioService
+    forwardRef(() => UsuarioModule),
   ],
   controllers: [CampañaController],
   providers: [CampañaService],

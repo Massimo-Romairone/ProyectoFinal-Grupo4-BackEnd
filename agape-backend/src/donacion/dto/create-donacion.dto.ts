@@ -1,18 +1,16 @@
-import { IsNumber, IsOptional, IsPositive, IsISO8601 } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive, IsISO8601, IsNotEmpty } from 'class-validator';
 
 export class CreateDonacionDto {
+  @IsNotEmpty()
   @IsNumber()
   @IsPositive()
   monto: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsISO8601()
-  fecha?: string; // opcional, puede venir como ISO; si no viene, crear en el servicio
+  fecha: Date;
 
+  @IsNotEmpty()
   @IsNumber()
   campaniaId: number;
-
-  @IsOptional()
-  @IsNumber()
-  usuarioId?: number; // opcional: recomendado NO usar desde el cliente; mejor tomar del token en el controller
 }

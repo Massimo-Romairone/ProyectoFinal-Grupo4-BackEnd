@@ -11,12 +11,12 @@ export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {
 
     @IsNotEmpty()
     @IsString()
-    @MaxLength(100)
+    @MaxLength(20)
     nombre:string;
     
     @IsNotEmpty()
     @IsString()
-    @MaxLength(100)
+    @MaxLength(30)
     apellido:string;
 
     @IsEmail()
