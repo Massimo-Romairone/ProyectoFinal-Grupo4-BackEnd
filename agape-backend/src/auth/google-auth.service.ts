@@ -22,10 +22,8 @@ export class GoogleAuthService {
       const payload = ticket.getPayload();
       if (!payload?.email) throw new UnauthorizedException('Token inválido');
 
-      // Buscar usuario en la DB
       let user = await this.usersService.findOneByEmail(payload.email);
 
-      // Si no existe, crearlo con contraseña aleatoria hasheada (o marcar como proveedor externo)
       if (!user) {
         const randomPass = Math.random().toString(36).slice(2, 12);
         const hashed = await bcrypt.hash(randomPass, 10);
@@ -39,7 +37,6 @@ export class GoogleAuthService {
         });
       }
 
-      // Generar tokens (mismo formato que AuthService.signIn)
       const payloadJwt = { sub: user.id_Usuario, email: user.email };
       const access_token = this.jwtService.sign(payloadJwt, { expiresIn: '15m' });
       const refresh_token = this.jwtService.sign(payloadJwt, { expiresIn: '7d' });

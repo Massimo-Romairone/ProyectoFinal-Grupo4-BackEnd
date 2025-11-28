@@ -102,7 +102,6 @@ export class AuthService {
     let user = await this.usuarioService.findOneByEmail(email);
 
     if (!user) {
-            // crear usuario nuevo con contraseña aleatoria hasheada
             const randomPass = Math.random().toString(36).slice(2, 12);
             const hashed = await bcrypt.hash(randomPass, 10);
 
@@ -117,7 +116,6 @@ export class AuthService {
             user = created as any;
         }
 
-        // payload consistente con signIn
         if (!user) {
             throw new UnauthorizedException('Usuario no encontrado');
         }
@@ -125,7 +123,6 @@ export class AuthService {
         const access_token = this.jwtService.sign(jwtPayload, { expiresIn: '15m' });
         const refresh_token = this.jwtService.sign(jwtPayload, { expiresIn: '7d' });
 
-        // devolver usuario sin contraseña
         const { contraseña, ...safeUser } = user as any;
         return { access_token, refresh_token, user: safeUser };
   }
