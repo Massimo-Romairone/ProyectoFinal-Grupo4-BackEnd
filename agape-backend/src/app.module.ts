@@ -5,10 +5,7 @@ import { CampañaModule } from './campaña/campaña.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { DonacionModule } from './donacion/donacion.module';
 import { AuthModule } from './auth/auth.module';
-import { MercadoPagoService } from './mercado-pago/mercado-pago.service';
 import { MercadoPagoModule } from './mercado-pago/mercado-pago.module';
-// import { MercadoPagoModule } from './mercado-pago/mercado-pago.module';
-// import { MercadoPagoService } from './mercado-pago/mercado-pago.service';
 
 
 @Module({
@@ -16,12 +13,12 @@ import { MercadoPagoModule } from './mercado-pago/mercado-pago.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: "postgresql://postgres.zbjnnacinotlinkdpybl:1234@aws-1-us-east-1.pooler.supabase.com:5432/postgres",
+      url: process.env.DATABASE_URL,
       ssl: {
         rejectUnauthorized: false,
       },
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     CampañaModule, UsuarioModule, DonacionModule, AuthModule, MercadoPagoModule
   ],

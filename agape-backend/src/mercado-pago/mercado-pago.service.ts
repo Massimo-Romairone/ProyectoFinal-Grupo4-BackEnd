@@ -27,9 +27,9 @@ export class MercadoPagoService {
           ],
           
           back_urls: {
-            success: 'MP_SUCCESS_URL',
-            failure: 'MP_FAILURE_URL',
-            pending: 'MP_PENDING_URL',
+            success: process.env.MP_SUCCESS_URL, 
+            failure: process.env.MP_FAILURE_URL,
+            pending: process.env.MP_PENDING_URL,
           },
 
           metadata: {
@@ -38,7 +38,7 @@ export class MercadoPagoService {
           },
           
           auto_return: 'approved',
-          notification_url: 'https://proyectofinal-grupo4-backend.onrender.com/mercadopago/webhook',
+          notification_url: process.env.MP_NOTIFICATION_URL,
           external_reference: idCampania,
         },
       });

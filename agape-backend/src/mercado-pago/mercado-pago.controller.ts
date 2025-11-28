@@ -1,6 +1,5 @@
 import { Controller, Post, Body, UsePipes, ValidationPipe, Res, HttpStatus, UseGuards, Req } from '@nestjs/common';
 import { MercadoPagoService } from './mercado-pago.service';
-import { CreatePreferenceDto } from './dto/create-preference.dto';
 import { DonacionService } from 'src/donacion/donacion.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CampañaService } from 'src/campaña/campaña.service';
@@ -26,9 +25,7 @@ export class MercadoPagoController {
         throw new Error("Campaña no encontrada");
     }
 
-    const tokenDelVendedor = "APP_USR-2860217832775391-112615-37fbc7dd695661cd2a4109a23662e6b9-3007735118";
-
-    console.log("Usando token hardcodeado");
+    const tokenDelVendedor = process.env.TOKEN_GENERAL_MUESTRA || '';
 
     const preference = await this.mercadoPagoService.crearPreferencia(
       body.amount,
