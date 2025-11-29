@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UsePipes, ValidationPipe, Res, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UsePipes, ValidationPipe, Res, HttpStatus, UseGuards, Req, BadRequestException } from '@nestjs/common';
 import { MercadoPagoService } from './mercado-pago.service';
 import { DonacionService } from 'src/donacion/donacion.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -26,6 +26,10 @@ export class MercadoPagoController {
     }
 
     const tokenDelVendedor = process.env.TOKEN_GENERAL_MUESTRA || '';
+
+    if (!tokenDelVendedor) {
+         throw new BadRequestException("No se pudo procesar el pago (Falta Token).");
+    }
 
     const preference = await this.mercadoPagoService.crearPreferencia(
       body.amount,

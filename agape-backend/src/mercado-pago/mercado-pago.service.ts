@@ -57,8 +57,9 @@ export class MercadoPagoService {
 
   async checkPayment(paymentId: string) {
     try {
+      const tokenDelVendedor = process.env.TOKEN_GENERAL_MUESTRA || '';
       const client = new MercadoPagoConfig({
-        accessToken: this.configService.getOrThrow<string>('MERCADOPAGO_ACCESS_TOKEN'),
+        accessToken: tokenDelVendedor,
       });
 
       const payment = new Payment(client);
